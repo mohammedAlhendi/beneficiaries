@@ -48,16 +48,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# قاعدة البيانات: SQLite افتراضياً للتجربة، وPostgreSQL عند ضبط DB_NAME في البيئة.
-if os.environ.get("DB_NAME"):
+# قاعدة البيانات: دعم متغيرات Supabase القياسية والمتغيرات المخصصة
+if os.environ.get("DB_NAME") or os.environ.get("POSTGRES_DB") or os.environ.get("POSTGRES_URL"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ["DB_NAME"],
-            "USER": os.environ.get("DB_USER", "postgres"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "localhost"),
-            "PORT": os.environ.get("DB_PORT", "5432"),
+            "NAME": os.environ.get("DB_NAME") or os.environ.get("POSTGRES_DB") or os.environ.get("POSTGRES_DATABASE", ""),
+            "USER": os.environ.get("DB_USER") or os.environ.get("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.environ.get("DB_PASSWORD") or os.environ.get("POSTGRES_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST") or os.environ.get("POSTGRES_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT") or os.environ.get("POSTGRES_PORT", "5432"),
         }
     }
 else:
@@ -99,26 +99,21 @@ if os.environ.get("HTTPS") == "1":
     SECURE_SSL_REDIRECT = True
 
 # ---- إعدادات خاصة بالنظام ----
-# أطوال أرقام الهوية المقبولة (الهوية الفلسطينية 9 أرقام). عدّلها حسب الهوية المعتمدة.
 NATIONAL_ID_LENGTHS = tuple(
     int(x) for x in os.environ.get("NATIONAL_ID_LENGTHS", "9").split(",") if x
 )
-# يلزم أن يكون اسم الزوجة رباعياً (4 كلمات فأكثر) في الإدخال والاستيراد؛ اجعله False لتخفيف الشرط
 STRICT_WIFE_QUAD_NAME = os.environ.get("STRICT_WIFE_QUAD_NAME", "1") == "1"
 MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "25"))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_MB * 1024 * 1024
 
-
 # ---- النشر على استضافة ----
-STATIC_ROOT = BASE_DIR / "staticfiles"
 CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
-try:                                   # تقديم الملفات الثابتة بدون خادم منفصل (إن كانت whitenoise مثبّتة)
+
+try:
     import whitenoise  # noqa: F401
     MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 except ImportError:
     pass
-if os.environ.get("BEHIND_PROXY") == "1":       # خلف Nginx/منصة تنهي HTTPS
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # خلف Nginx أو منصة سحابية مثل Vercel
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
