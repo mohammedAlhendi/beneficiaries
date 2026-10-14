@@ -108,7 +108,6 @@ STRICT_WIFE_QUAD_NAME = os.environ.get("STRICT_WIFE_QUAD_NAME", "1") == "1"
 MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "25"))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_MB * 1024 * 1024
 
-
 # تفعيل قراءة النطاقات القادمة عبر بروكسي Vercel بشكل صحيح
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
