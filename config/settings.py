@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me-in-production")
 DEBUG = os.environ.get("DEBUG", "1") == "1"
-ALLOWED_HOSTS = [*]
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -119,3 +119,7 @@ except ImportError:
     pass
 if os.environ.get("BEHIND_PROXY") == "1":       # خلف Nginx/منصة تنهي HTTPS
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# خلف Nginx أو منصة سحابية مثل Vercel
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
