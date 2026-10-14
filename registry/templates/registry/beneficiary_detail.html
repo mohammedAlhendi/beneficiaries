@@ -1,0 +1,100 @@
+{% extends "registry/base.html" %}
+{% block title %}{{ b.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ b.full_name }}</h1>
+<div class="card">
+  <div class="grid cols-3">
+    <div class="stat"><div class="v">{{ total }}</div><div class="l">عدد مرات الاستفادة</div></div>
+    <div class="stat"><div class="v">{{ projects_count }}</div><div class="l">عدد المشاريع</div></div>
+    <div class="stat"><div class="v" style="font-size:1.25rem"><span class="num">{{ b.national_id }}</span></div><div class="l">رقم الهوية</div></div>
+  </div>
+  {% if b.missing_required %}<p class="messages"><span class="warning" style="display:block;padding:.4rem .8rem">بيانات ناقصة تُستكمل عند التعديل: {{ b.missing_required|join:"، " }}</span></p>{% endif %}
+  <div class="grid cols-3">
+    <div class="stat"><div class="v" style="font-size:1.1rem">{{ b.wife_name|default:"—" }}</div><div class="l">اسم الزوجة</div></div>
+    <div class="stat"><div class="v" style="font-size:1.1rem"><span class="num">{{ b.wife_national_id|default:"—" }}</span></div><div class="l">هوية الزوجة</div></div>
+    <div class="stat"><div class="v" style="font-size:1.1rem">{{ b.family_size|default:"—" }}</div><div class="l">عدد أفراد الأسرة</div></div>
+  </div>
+  {% if b.manager_notes %}<p><strong>ملاحظات المدير:</strong> {{ b.manager_notes|linebreaksbr }}</p>{% endif %}
+  {% if family %}
+  <p><strong>روابط أسرية:</strong></p>
+  <ul>{% for o, rel in family %}<li><a href="{% url 'beneficiary_detail' o.pk %}">{{ o.full_name }}</a> <span class="num muted">{{ o.national_id }}</span> — {{ rel }}</li>{% endfor %}</ul>
+  {% endif %}
+  <p><strong>الحالة الاجتماعية:</strong> {{ b.social_status|default:"—"|linebreaksbr }}</p>
+  {% if by_type %}
+  <p><strong>حسب النوع:</strong>
+    {% for t in by_type %}<span class="badge">{{ t.aid_type__name }}: {{ t.n }}</span> {% endfor %}
+  </p>
+  {% endif %}
+  {% if aliases %}
+  <p><strong>أسماء بديلة وردت في الملفات لنفس الهوية:</strong></p>
+  <ul>
+    {% for a in aliases %}<li>{{ a.name }} <span class="muted">({{ a.source|default:"—" }} — {{ a.created_at|date:"Y-m-d" }})</span>
+      {% if can_edit %}<form method="post" action="{% url 'alias_promote' a.pk %}" style="display:inline" onsubmit="return confirm('اعتماد هذا الاسم كاسم أساسي؟')">{% csrf_token %}<button class="btn small secondary no-print" type="submit">اعتماده اسماً أساسياً</button></form>{% endif %}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  <div class="actions no-print">
+    {% if can_edit %}<a class="btn secondary" href="{% url 'beneficiary_edit' b.pk %}">تعديل البيانات</a>{% endif %}
+    {% if is_admin %}
+    <form method="post" action="{% url 'beneficiary_delete' b.pk %}" onsubmit="return confirm('إخفاء هذا المستفيد؟ يبقى أثره في سجل التدقيق.')">
+      {% csrf_token %}<button class="btn danger" type="submit">حذف (إخفاء)</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+{% include "registry/_filters.html" with button_label="تصفية الاستفادات" %}
+
+<div class="card">
+  <h2 style="margin-top:0">سجل الاستفادات</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>تاريخ الاستلام</th><th>نوع المساعدة</th><th>المشروع</th><th>الكشف</th><th>المصدر</th><th>ملاحظة</th>{% if can_edit %}<th class="no-print"></th>{% endif %}</tr></thead>
+      <tbody>
+      {% for x in benefits %}
+        <tr>
+          <td>{{ x.receipt_date|date:"Y-m-d" }}</td>
+          <td>{{ x.aid_type }}</td>
+          <td>{{ x.project }}</td>
+          <td><a href="{% url 'distribution_detail' x.distribution_id %}">عرض الكشف</a></td>
+          <td>{{ x.source_label }}</td>
+          <td>{{ x.note|default:"—" }}</td>
+          {% if can_edit %}<td class="no-print">
+            <a href="{% url 'benefit_edit' x.pk %}">تعديل</a>
+            {% if is_admin %}<form method="post" action="{% url 'benefit_delete' x.pk %}" style="display:inline" onsubmit="return confirm('حذف هذه الاستفادة؟')">{% csrf_token %}<button class="btn small danger" type="submit">حذف</button></form>{% endif %}
+          </td>{% endif %}
+        </tr>
+      {% empty %}
+        <tr><td class="empty" colspan="7">لا توجد استفادات مطابقة.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if can_edit %}
+<div class="card no-print">
+  <h2 style="margin-top:0">إضافة استفادة يدوياً</h2>
+  <form method="post" action="{% url 'benefit_add' b.pk %}">
+    {% csrf_token %}
+    <div class="row">
+      <div class="field"><label>{{ benefit_form.project.label }}</label>{{ benefit_form.project }}</div>
+      <div class="field"><label>{{ benefit_form.aid_type.label }}</label>{{ benefit_form.aid_type }}</div>
+      <div class="field"><label>{{ benefit_form.receipt_date.label }}</label>{{ benefit_form.receipt_date }}</div>
+      <div class="field"><label>{{ benefit_form.note.label }}</label>{{ benefit_form.note }}</div>
+      <button class="btn" type="submit">إضافة</button>
+    </div>
+    <p class="help">يُضاف تلقائياً إلى كشف المشروع المطابق (نفس النوع والتاريخ) إن وُجد، وإلا يُنشأ له كشف، فيظهر في كشف المشروع وتصديره.</p>
+  </form>
+</div>
+<div class="card no-print">
+  <h2 style="margin-top:0">إضافته إلى كشف (أو عدة كشوف) قائمة</h2>
+  <form method="post" action="{% url 'benefit_add_kashfs' b.pk %}">
+    {% csrf_token %}
+    <div class="field"><label>{{ kashf_form.distributions.label }}</label>{{ kashf_form.distributions }}</div>
+    <div class="field"><label>{{ kashf_form.note.label }}</label>{{ kashf_form.note }}</div>
+    <button class="btn" type="submit" style="margin-top:.5rem">إضافة إلى الكشوف المحددة</button>
+    <p class="help">استخدم Ctrl للتحديد المتعدد. تُسجَّل الاستفادة بمشروع الكشف ونوعه وتاريخه، وتُسجَّل العملية في سجل التدقيق.</p>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

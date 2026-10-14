@@ -1,0 +1,47 @@
+{% extends "registry/base.html" %}
+{% block title %}مطابقة الأعمدة{% endblock %}
+{% block content %}
+<h1>مطابقة أعمدة الملف{% if registry %} (القائمة الأساسية){% endif %}</h1>
+<p class="muted">الملف: {{ upload.file_name }} — المشروع: {{ upload.project }} — {{ total_rows }} صف</p>
+{% for n in notes %}<p class="help">{{ n }}</p>{% endfor %}
+
+<div class="card">
+  <h2 style="margin-top:0">معاينة أول الصفوف</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>{% for c in columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for row in preview %}<tr>{% for cell in row %}<td>{{ cell|truncatechars:40 }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<form method="post" class="card">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <h2 style="margin-top:0">أي عمود يقابل أي حقل؟</h2>
+  <p class="help">اقترح النظام المطابقة تلقائياً من أسماء الأعمدة؛ راجعها وصحّحها عند الحاجة. الاسم ورقم الهوية إلزاميان؛ وفي القائمة الأساسية تلزم أيضاً: اسم الزوجة رباعي، هوية الزوجة، وعدد أفراد الأسرة (تُرفض الصفوف الناقصة). كل أعمدة الملف تُحفظ كما رُفعت حتى لو لم تُطابَق.</p>
+  <div class="row">
+    {% for f in form %}
+      {% if f.name != "default_aid_type" and f.name != "new_aid_type" and f.name != "default_date" %}
+      <div class="field"><label>{{ f.label }}{% if f.field.required %} *{% endif %}</label>{{ f }}{{ f.errors }}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if not registry %}
+  <h2>نوع المساعدة والتاريخ من خارج الملف</h2>
+  <p class="help">تُستخدم للصفوف التي لا تحمل قيمة في عمودها (أو لكل الصفوف إن لم يوجد عمود).</p>
+  <div class="row">
+    <div class="field"><label>{{ form.default_aid_type.label }}</label>{{ form.default_aid_type }}</div>
+    <div class="field"><label>{{ form.new_aid_type.label }}</label>{{ form.new_aid_type }}</div>
+    <div class="field"><label>{{ form.default_date.label }}</label>{{ form.default_date }}{{ form.default_date.errors }}</div>
+  </div>
+  {% endif %}
+  <p style="margin-top:1rem"><button class="btn" type="submit">تنقية البيانات ومراجعة الملخص</button></p>
+</form>
+<form method="post" action="{% url 'upload_cancel' upload.pk %}">{% csrf_token %}
+  <button class="btn secondary" type="submit">إلغاء الرفع</button>
+</form>
+{% endblock %}

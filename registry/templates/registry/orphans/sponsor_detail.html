@@ -1,0 +1,30 @@
+{% extends "registry/base.html" %}
+{% block title %}{{ s.name }}{% endblock %}
+{% block content %}
+<h1>{{ s.name }}</h1>
+{% include "registry/orphans/_nav.html" %}
+<div class="card">
+  <p>{% if s.organization %}الجهة: <strong>{{ s.organization }}</strong> — {% endif %}{% if s.country %}البلد: {{ s.country }} — {% endif %}الجوال: <span class="num">{{ s.phone|default:"—" }}</span> — البريد: {{ s.email|default:"—" }}</p>
+  {% if s.notes %}<p>{{ s.notes|linebreaksbr }}</p>{% endif %}
+  <p><strong>{{ active_n }}</strong> يتيم مكفول حالياً.</p>
+  <div class="actions no-print"><a class="btn secondary" href="{% url 'sponsor_edit' s.pk %}">تعديل</a>
+    <a class="btn" href="{% url 'sponsorship_create_for_sponsor' s.pk %}">+ إضافة يتيم لهذا الكفيل</a></div>
+</div>
+<div class="card"><h2 style="margin-top:0">الأيتام المكفولون</h2>
+  <div class="table-wrap"><table>
+  <thead><tr><th>اليتيم</th><th>المبلغ</th><th>الدورية</th><th>البداية</th><th>الحالة</th><th>المدفوع</th><th>آخر دفعة</th></tr></thead><tbody>
+  {% for x in sponsorships %}
+    <tr><td><a href="{% url 'orphan_detail' x.orphan_id %}">{{ x.orphan.full_name }}</a></td>
+      <td>{{ x.amount|default_if_none:"—" }} {{ x.currency }}</td><td>{{ x.get_frequency_display }}</td><td>{{ x.start_date|date:"Y-m-d" }}</td>
+      <td><span class="badge {% if x.status != 'active' %}cancelled{% endif %}">{{ x.get_status_display }}</span>{% if x.pk in overdue %} <span class="badge draft">دفعة متأخرة</span>{% endif %}</td>
+      <td>{{ x.paid|default:"0" }}</td><td>{{ x.last|date:"Y-m-d"|default:"—" }}</td></tr>
+    <tr class="no-print"><td colspan="7"><form method="post" action="{% url 'payment_add' x.pk %}" class="row">{% csrf_token %}
+      <input type="hidden" name="back" value="sponsor">
+      <div class="field"><label>تاريخ الدفعة</label>{{ payment_form.paid_on }}</div>
+      <div class="field"><label>المبلغ</label>{{ payment_form.amount }}</div>
+      <div class="field"><label>ملاحظة</label>{{ payment_form.note }}</div>
+      <button class="btn small" type="submit">تسجيل دفعة</button></form></td></tr>
+  {% empty %}<tr><td class="empty" colspan="7">لا توجد كفالات.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "registry/base.html" %}
+{% block title %}الكشوفات{% endblock %}
+{% block content %}
+<h1>الكشوفات</h1>
+{% include "registry/_filters.html" with button_label="بحث عن كشف" %}
+
+<div class="grid cols-3">
+  <div class="stat"><div class="v">{{ summary.kashfs }}</div><div class="l">عدد الكشوفات</div></div>
+  <div class="stat"><div class="v">{{ summary.names }}</div><div class="l">مجموع الأسماء</div></div>
+</div>
+
+{% if summary.by_type %}
+<div class="card" style="margin-top:1rem">
+  <h2 style="margin-top:0">حسب نوع المساعدة</h2>
+  <table>
+    <thead><tr><th>النوع</th><th>عدد الكشوفات</th><th>عدد الأسماء</th></tr></thead>
+    <tbody>{% for t in summary.by_type %}
+      <tr><td>{{ t.aid_type__name }}</td><td>{{ t.kashfs }}</td><td>{{ t.names }}</td></tr>
+    {% endfor %}</tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>التاريخ</th><th>نوع المساعدة</th><th>عدد الأسماء</th><th>المشروع</th><th></th></tr></thead>
+    <tbody>
+    {% for d in page %}
+      <tr>
+        <td>{{ d.distribution_date|date:"Y-m-d" }}</td>
+        <td>{{ d.aid_type }}</td>
+        <td>{{ d.names_count }}</td>
+        <td>{{ d.project }}</td>
+        <td><a class="btn small secondary" href="{% url 'distribution_detail' d.pk %}">فتح الكشف</a></td>
+      </tr>
+    {% empty %}
+      <tr><td class="empty" colspan="5">لا توجد كشوفات مطابقة.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "registry/_pager.html" %}
+</div>
+{% endblock %}
