@@ -9,7 +9,10 @@ def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
 
-    call_command("migrate", interactive=False)
+    try:
+        call_command("migrate", interactive=False, fake_initial=True)
+    except Exception as exc:  # الجداول قد تكون أُنشئت مسبقاً خارج سجل الترحيلات
+        print(f"WARNING: migrate failed: {exc}")
 
     username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
     password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
