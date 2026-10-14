@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}نظام المستفيدين{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'registry/style.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{% url 'search' %}">نظام المستفيدين</a>
+  {% if user.is_authenticated %}
+  <nav>
+    <a href="{% url 'search' %}" {% if request.resolver_match.url_name == 'search' %}class="active"{% endif %}>البحث</a>
+    {% if can_edit %}<a href="{% url 'distribution_list' %}" {% if 'distribution' in request.resolver_match.url_name %}class="active"{% endif %}>الكشوفات</a>{% endif %}
+    <a href="{% url 'compare_new' %}" {% if 'compare' in request.resolver_match.url_name %}class="active"{% endif %}>بحث بملف</a>
+    <a href="{% url 'report' %}" {% if 'report' in request.resolver_match.url_name %}class="active"{% endif %}>كشف مجمّع</a>
+    {% if can_edit %}
+    <a href="{% url 'upload_list' %}" {% if 'upload' in request.resolver_match.url_name %}class="active"{% endif %}>رفع الملفات</a>
+    <a href="{% url 'projects' %}" {% if 'project' in request.resolver_match.url_name %}class="active"{% endif %}>المشاريع</a>
+    <a href="{% url 'stats' %}" {% if request.resolver_match.url_name == 'stats' %}class="active"{% endif %}>إحصاءات</a>
+    {% endif %}
+    {% if can_edit %}<a href="{% url 'beneficiary_create' %}">إدراج مستفيد</a>{% endif %}
+    {% if can_orphans %}<a href="{% url 'orphan_list' %}" {% if 'orphan' in request.resolver_match.url_name or 'sponsor' in request.resolver_match.url_name or 'payment' in request.resolver_match.url_name %}class="active"{% endif %}>الأيتام والكفلاء</a>{% endif %}
+    {% if is_admin %}<a href="{% url 'user_list' %}" {% if 'user' in request.resolver_match.url_name %}class="active"{% endif %}>المستخدمون</a><a href="{% url 'audit_list' %}">سجل التدقيق</a><a href="/admin/">الإدارة</a>{% endif %}
+  </nav>
+  <div class="user">
+    <span>{{ user.get_full_name|default:user.username }}</span>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">خروج</button></form>
+  </div>
+  {% endif %}
+</header>
+<main>
+  {% if messages %}
+  <ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

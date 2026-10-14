@@ -1,0 +1,27 @@
+{% extends "registry/base.html" %}
+{% block title %}سجل التدقيق{% endblock %}
+{% block content %}
+<h1>سجل التدقيق</h1>
+<form method="get" class="card no-print">
+  <div class="row">
+    <div class="field"><label>نوع العملية</label>
+      <select name="action"><option value="">الكل</option>
+        {% for a in actions %}<option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>{% endfor %}
+      </select></div>
+    <button class="btn" type="submit">تصفية</button>
+  </div>
+</form>
+<div class="card">
+  <div class="table-wrap"><table>
+    <thead><tr><th>الوقت</th><th>المستخدم</th><th>العملية</th><th>الكائن</th><th>التفاصيل</th></tr></thead>
+    <tbody>
+    {% for l in page %}
+      <tr><td>{{ l.created_at|date:"Y-m-d H:i" }}</td><td>{{ l.username }}</td><td>{{ l.action }}</td><td>{{ l.object_repr }}</td><td>{{ l.details|truncatechars:120 }}</td></tr>
+    {% empty %}
+      <tr><td class="empty" colspan="5">لا توجد سجلات.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% include "registry/_pager.html" %}
+</div>
+{% endblock %}

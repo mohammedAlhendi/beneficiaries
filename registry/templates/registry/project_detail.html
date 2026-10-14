@@ -1,0 +1,27 @@
+{% extends "registry/base.html" %}
+{% block title %}{{ p.name }}{% endblock %}
+{% block content %}
+<h1>مشروع: {{ p.name }}</h1>
+<div class="grid cols-3">
+  <div class="stat"><div class="v">{{ o.kashfs }}</div><div class="l">كشف توزيع</div></div>
+  <div class="stat"><div class="v">{{ o.people }}</div><div class="l">شخص استفاد</div></div>
+  <div class="stat"><div class="v">{{ o.benefits }}</div><div class="l">استفادة مسجلة{% if o.manual %} (منها {{ o.manual }} يدوية){% endif %}</div></div>
+</div>
+<div class="actions no-print" style="margin:.8rem 0">
+  <a class="btn" href="{% url 'project_export' p.pk %}">تصدير كل أسماء المشروع (إكسل)</a>
+  <a class="btn secondary" href="{% url 'projects' %}">رجوع للمشاريع</a>
+</div>
+{% if o.by_type %}
+<div class="card"><h2 style="margin-top:0">حسب نوع المساعدة</h2>
+  <table><thead><tr><th>النوع</th><th>الاستفادات</th><th>الأشخاص</th></tr></thead><tbody>
+  {% for t in o.by_type %}<tr><td>{{ t.aid_type__name }}</td><td>{{ t.n }}</td><td>{{ t.people }}</td></tr>{% endfor %}
+  </tbody></table></div>
+{% endif %}
+<div class="card"><h2 style="margin-top:0">كشوف المشروع</h2>
+  <table><thead><tr><th>التاريخ</th><th>النوع</th><th>الأسماء</th><th>المصدر</th></tr></thead><tbody>
+  {% for d in dists %}
+    <tr><td><a href="{% url 'distribution_detail' d.pk %}">{{ d.distribution_date|date:"Y-m-d" }}</a></td><td>{{ d.aid_type }}</td><td>{{ d.names_count }}</td>
+      <td>{% if d.upload %}{{ d.upload.file_name }}{% else %}إدخال يدوي{% endif %}</td></tr>
+  {% empty %}<tr><td class="empty" colspan="4">لا توجد كشوف.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "registry/base.html" %}
+{% block title %}غير مصرّح{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>لا تملك صلاحية لهذه الصفحة</h1>
+  <p>اطلب من مسؤول النظام إضافتك إلى الدور المناسب (مسؤول، مدخل بيانات، أو قراءة فقط).</p>
+  <p><a class="btn secondary" href="{% url 'search' %}">العودة إلى البحث</a></p>
+</div>
+{% endblock %}

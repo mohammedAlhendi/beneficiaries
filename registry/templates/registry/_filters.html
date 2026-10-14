@@ -1,0 +1,25 @@
+{# يتطلب: form، وbutton_label، وshow_q (اختياري) #}
+<form method="get" class="card no-print">
+  {{ form.non_field_errors }}
+  <div class="row">
+    {% if show_q %}
+    <div class="field" style="flex:2; min-width:260px">
+      <label for="{{ form.q.id_for_label }}">{{ form.q.label }}</label>
+      {{ form.q }}
+    </div>
+    {% endif %}
+    {% if show_status %}<div class="field"><label>{{ form.status.label }}</label>{{ form.status }}</div>{% endif %}
+    <div class="field"><label>{{ form.aid_type.label }}</label>{{ form.aid_type }}</div>
+    <div class="field"><label>{{ form.project.label }}</label>{{ form.project }}</div>
+  </div>
+  <div class="row" style="margin-top:.7rem">
+    <div class="field"><label>{{ form.month_from.label }}</label>{{ form.month_from }}</div>
+    <div class="field"><label>{{ form.month_to.label }}</label>{{ form.month_to }}</div>
+    <div class="field"><label>{{ form.date_from.label }}</label>{{ form.date_from }}</div>
+    <div class="field"><label>{{ form.date_to.label }}</label>{{ form.date_to }}</div>
+  </div>
+  {% for f in form %}{% if f.errors %}{{ f.errors }}{% endif %}{% endfor %}
+  <p class="help">إذا حددت شهراً فهو يُقدَّم على التاريخ الدقيق.</p>
+  <button class="btn" type="submit">{{ button_label|default:"تطبيق" }}</button>
+  <a class="btn secondary" href="?">مسح الفلاتر</a>
+</form>
