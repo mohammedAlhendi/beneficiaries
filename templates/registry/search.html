@@ -1,0 +1,87 @@
+{% extends "registry/base.html" %}
+{% block title %}البحث عن مستفيد{% endblock %}
+{% block content %}
+<h1>البحث عن مستفيد</h1>
+<div class="card no-print">
+  <h2 style="margin-top:0">البحث بملف كامل</h2>
+  <form method="post" action="{% url 'compare_new' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="field" style="flex:2"><label>ارفع ملف إكسل بالأسماء/الهويات لمعرفة كم مرة استفاد كل واحد ومتى</label><input type="file" name="file" accept=".xlsx,.xlsm,.xls,.csv" required></div>
+      <button class="btn" type="submit">ابحث بالملف</button>
+      <a class="btn secondary" href="{% url 'compare_new' %}">خيارات متقدمة (فترة / نوع)</a>
+    </div>
+  </form>
+</div>
+<h2>البحث الفردي</h2>
+{% include "registry/_filters.html" with show_q=True show_status=True button_label="بحث" %}
+<div id="suggest-box" class="card no-print" style="display:none;margin-top:-.5rem"></div>
+<script>
+(function(){
+  var q=document.querySelector('input[name="q"]'), box=document.getElementById('suggest-box'), t=null;
+  if(!q||!box) return;
+  q.setAttribute('autocomplete','off');
+  q.addEventListener('input',function(){
+    clearTimeout(t); var v=q.value.trim();
+    if(v.length<2){box.style.display='none';return;}
+    t=setTimeout(function(){
+      fetch("{% url 'search_suggest' %}?q="+encodeURIComponent(v),{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
+        box.innerHTML='';
+        if(!d.results.length){box.style.display='none';return;}
+        d.results.forEach(function(x){
+          var a=document.createElement('a'); a.href="/beneficiaries/"+x.id+"/"; a.style.display='block'; a.style.padding='.25rem 0';
+          a.textContent=x.name+' — '+x.national_id+(x.wife_name?' | الزوجة: '+x.wife_name:'')+(x.wife_national_id?' ('+x.wife_national_id+')':'')+(x.via?'  ⟵ '+x.via:'');
+          box.appendChild(a);
+        });
+        box.style.display='block';
+      }).catch(function(){});
+    },250);
+  });
+})();
+</script>
+
+{% if page %}
+  <div class="card">
+    <p><strong>{{ page.paginator.count }}</strong> نتيجة{% if filtered %} (ضمن الفلاتر المحددة){% endif %}
+      {% if page.paginator.count %}<a class="btn small secondary no-print" style="margin-inline-start:1rem" href="{% url 'search_export' %}?{{ qs }}">تصدير كل النتائج (إكسل)</a>{% endif %}</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>الاسم</th><th>رقم الهوية</th><th>اسم الزوجة / هويتها</th><th>الأسرة</th><th>نوع المساعدة</th>
+          <th>عدد مرات الاستفادة</th>{% if filtered %}<th>ضمن الفلتر</th>{% endif %}
+          <th>عدد المشاريع</th><th>آخر استلام</th>
+        </tr></thead>
+        <tbody>
+        {% for b in page %}
+          <tr>
+            <td><a href="{% url 'beneficiary_detail' b.pk %}">{{ b.full_name }}</a></td>
+            <td><span class="num">{{ b.national_id }}</span></td>
+            <td>{{ b.wife_name|default:"—" }}{% if b.wife_national_id %}<br><span class="num muted">{{ b.wife_national_id }}</span>{% endif %}</td>
+            <td>{{ b.family_size|default:"—" }}</td>
+            <td>{% for t in b.aid_types %}<span class="badge">{{ t.name }}{% if t.n > 1 %} ×{{ t.n }}{% endif %}</span> {% empty %}<span class="muted">لم يستفد</span>{% endfor %}</td>
+            <td>{{ b.total_benefits }}</td>
+            {% if filtered %}<td>{{ b.matched_benefits }}</td>{% endif %}
+            <td>{{ b.projects_count }}</td>
+            <td>{{ b.last_date|date:"Y-m-d"|default:"—" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td class="empty" colspan="9">لا توجد نتائج مطابقة.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "registry/_pager.html" %}
+  </div>
+{% elif searched %}
+  <div class="card muted">صحّح الحقول المظللة ثم أعد البحث.</div>
+{% else %}
+  <div class="grid cols-3">
+    <div class="stat"><div class="v">{{ stats.beneficiaries }}</div><div class="l">أسرة / مستفيد مسجل</div></div>
+    <div class="stat"><div class="v">{{ stats.served }}</div><div class="l">استفادوا مرة واحدة على الأقل</div></div>
+    <div class="stat warn"><div class="v">{{ stats.not_served }}</div><div class="l">لم يستفيدوا بعد</div></div>
+    <div class="stat"><div class="v">{{ stats.distributions }}</div><div class="l">كشف توزيع</div></div>
+    <div class="stat"><div class="v">{{ stats.benefits }}</div><div class="l">استفادة مسجلة</div></div>
+  </div>
+  <p class="muted">اكتب اسماً أو رقم هوية (أو جزءاً منهما) ثم اضغط «بحث». لمعرفة من لم يستفد، اختر الحالة «لم يستفد» مع نوع المساعدة والفترة (مثلاً: من لم يستلم النقدية هذا العام)، ثم صدّر القائمة.</p>
+{% endif %}
+{% endblock %}

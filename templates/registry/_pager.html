@@ -1,0 +1,7 @@
+{% if page.paginator.num_pages > 1 %}
+<div class="pager">
+  {% if page.has_previous %}<a href="?{{ qs }}{% if qs %}&{% endif %}page={{ page.previous_page_number }}">السابق</a>{% endif %}
+  <span class="cur">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a href="?{{ qs }}{% if qs %}&{% endif %}page={{ page.next_page_number }}">التالي</a>{% endif %}
+</div>
+{% endif %}

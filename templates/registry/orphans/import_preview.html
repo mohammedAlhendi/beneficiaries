@@ -1,0 +1,32 @@
+{% extends "registry/base.html" %}
+{% block title %}معاينة ملف أيتام{% endblock %}
+{% block content %}
+<h1>معاينة: {{ imp.file_name }}</h1>
+{% if error %}
+  <div class="card"><p style="color:var(--danger)">{{ error }}</p><a class="btn secondary" href="{% url 'orphan_import_new' %}">رجوع</a></div>
+{% elif done %}
+  <div class="card"><p>هذه الرفعة {{ imp.get_status_display }}.</p><a class="btn secondary" href="{% url 'orphan_import_new' %}">رجوع</a></div>
+{% else %}
+  <div class="grid cols-3">
+    <div class="stat"><div class="v">{{ stats.rows }}</div><div class="l">سطر في الملف</div></div>
+    <div class="stat"><div class="v">{{ stats.new }}</div><div class="l">يتيم جديد سيُضاف (من {{ stats.orphans }})</div></div>
+    <div class="stat"><div class="v">{{ stats.families }}</div><div class="l">أسرة</div></div>
+    <div class="stat warn"><div class="v">{{ stats.existing }}</div><div class="l">موجود مسبقاً (يُتخطى)</div></div>
+    <div class="stat warn"><div class="v">{{ stats.duplicates }}</div><div class="l">مكرر داخل الملف (يُتخطى)</div></div>
+    <div class="stat danger"><div class="v">{{ stats.rejected }}</div><div class="l">مرفوض (اسم ناقص)</div></div>
+    <div class="stat"><div class="v">{{ stats.no_id }}</div><div class="l">بلا رقم هوية (يُحفظون)</div></div>
+    <div class="stat"><div class="v">{{ stats.no_birth }}</div><div class="l">بلا تاريخ ميلاد</div></div>
+  </div>
+  <div class="card"><h2 style="margin-top:0">عيّنة من النتيجة</h2>
+    <table><thead><tr><th>السطر</th><th>اليتيم</th><th>الهوية</th><th>الميلاد</th><th>الجنس</th></tr></thead><tbody>
+    {% for o in sample %}<tr><td>{{ o.row }}</td><td>{{ o.full_name }}</td><td><span class="num">{{ o.national_id|default:"—" }}</span></td><td>{{ o.birth_date|date:"Y-m-d"|default:"—" }}</td><td>{{ o.gender|default:"—" }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% if rejected %}<div class="card"><h2 style="margin-top:0">المرفوض</h2><table><tbody>{% for r in rejected %}<tr><td>سطر {{ r.row }}</td><td>{{ r.reason }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+  {% if warnings %}<div class="card"><h2 style="margin-top:0">تنبيهات (حُفظ السجل وتُركت الخانة فارغة)</h2><table><tbody>{% for r in warnings %}<tr><td>سطر {{ r.row }}</td><td>{{ r.what }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+  {% if duplicates %}<div class="card"><h2 style="margin-top:0">المكرر</h2><table><tbody>{% for r in duplicates %}<tr><td>سطر {{ r.row }}</td><td>{{ r.name }}</td><td>{{ r.reason }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+  <form method="post" action="{% url 'orphan_import_confirm' imp.token %}" class="no-print">
+    {% csrf_token %}<button class="btn" type="submit">اعتماد وإضافة {{ stats.new }} يتيم</button>
+    <a class="btn secondary" href="{% url 'orphan_import_new' %}">إلغاء</a>
+  </form>
+{% endif %}
+{% endblock %}

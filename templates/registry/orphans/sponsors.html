@@ -1,0 +1,15 @@
+{% extends "registry/base.html" %}
+{% block title %}الكفلاء{% endblock %}
+{% block content %}
+<h1>الكفلاء</h1>
+{% include "registry/orphans/_nav.html" %}
+<form method="get" class="card no-print"><div class="row">
+  <div class="field" style="flex:2"><label>{{ form.q.label }}</label>{{ form.q }}</div>
+  <button class="btn" type="submit">بحث</button>
+  <a class="btn secondary" href="{% url 'sponsor_export' %}">تصدير الكفلاء (إكسل)</a></div></form>
+<div class="card"><table>
+  <thead><tr><th>الكفيل</th><th>الجهة</th><th>البلد</th><th>الجوال</th><th>أيتام مكفولون</th></tr></thead><tbody>
+  {% for s in page %}<tr><td><a href="{% url 'sponsor_detail' s.pk %}">{{ s.name }}</a></td><td>{{ s.organization|default:"—" }}</td><td>{{ s.country|default:"—" }}</td><td><span class="num">{{ s.phone|default:"—" }}</span></td><td>{{ s.orphans_n }}</td></tr>
+  {% empty %}<tr><td class="empty" colspan="5">لا يوجد كفلاء.</td></tr>{% endfor %}
+  </tbody></table>{% include "registry/_pager.html" %}</div>
+{% endblock %}

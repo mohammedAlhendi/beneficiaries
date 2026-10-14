@@ -1,0 +1,26 @@
+{% extends "registry/base.html" %}
+{% block title %}المشاريع{% endblock %}
+{% block content %}
+<h1>المشاريع</h1>
+{% if is_admin %}
+<form method="post" class="card no-print">
+  {% csrf_token %}
+  <div class="row">
+    <div class="field" style="flex:2"><label>اسم مشروع جديد</label><input type="text" name="name" required maxlength="200"></div>
+    <button class="btn" type="submit">إنشاء</button>
+  </div>
+</form>
+{% endif %}
+<div class="card">
+  <table>
+    <thead><tr><th>المشروع</th><th>عدد الملفات المرفوعة</th><th>عدد الكشوفات</th><th>المستخدمون</th>{% if is_admin %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for p in projects %}
+      <tr><td><a href="{% url 'project_detail' p.pk %}">{{ p.name }}</a></td><td>{{ p.uploads_n }}</td><td>{{ p.kashfs_n }}</td><td>{{ p.members_n }}</td>{% if is_admin %}<td><a class="btn small secondary" href="{% url 'project_members' p.pk %}">تعيين المستخدمين</a></td>{% endif %}</tr>
+    {% empty %}
+      <tr><td class="empty" colspan="5">لا توجد مشاريع بعد.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
