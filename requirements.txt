@@ -2,6 +2,7 @@ Django>=5.0,<7.0
 pandas>=2.2
 openpyxl>=3.1
 xlrd>=2.0
+psycopg2-binary
 # للإنتاج على PostgreSQL (اختياري):
 # psycopg[binary]>=3.1   # فقط إن استخدمت PostgreSQL
 gunicorn
