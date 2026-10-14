@@ -49,7 +49,24 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # قاعدة البيانات: SQLite افتراضياً للتجربة، وPostgreSQL عند ضبط DB_NAME في البيئة.
-if os.environ.get("DB_NAME"):
+# Vercel لا يدعم IPv6، لذلك نفضّل رابط Supabase pooler (IPv4) عند توفره.
+_DATABASE_URL = os.environ.get("POSTGRES_URL_NON_POOLING") or os.environ.get("DATABASE_URL")
+if _DATABASE_URL:
+    from urllib.parse import unquote, urlparse
+
+    _url = urlparse(_DATABASE_URL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": _url.path.lstrip("/") or "postgres",
+            "USER": unquote(_url.username or ""),
+            "PASSWORD": unquote(_url.password or ""),
+            "HOST": _url.hostname,
+            "PORT": _url.port or 5432,
+            "OPTIONS": {"sslmode": "require"},
+        }
+    }
+elif os.environ.get("DB_NAME"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
