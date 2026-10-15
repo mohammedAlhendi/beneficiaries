@@ -23,14 +23,14 @@
 </div>
 
 {% if stats.new_aid_types %}
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <strong>أنواع مساعدات جديدة ستُضاف:</strong>
   {% for t in stats.new_aid_types %}<span class="badge">{{ t }}</span> {% endfor %}
 </div>
 {% endif %}
 
 {% if not registry and unmatched %}
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <h2 style="margin-top:0">أسماء غير مسجلة في القاعدة ({{ stats.new_beneficiaries }} هوية)</h2>
   <p class="help">هذه الهويات غير موجودة في القاعدة. قد تكون أسراً فعلاً غير مسجلة، أو أخطاء في كتابة رقم الهوية. يمكنك تخطيها عند الاعتماد، أو إضافتها كمستفيدين جدد.</p>
   <div class="table-wrap"><table>
@@ -44,7 +44,7 @@
 {% endif %}
 
 {% if cleaned.rejected %}
-<div class="card" style="margin-top:1rem">
+<div class="card">
   <h2 style="margin-top:0">الصفوف المرفوضة ({{ cleaned.rejected|length }})</h2>
   <p class="help">لن تُدمج هذه الصفوف. صحّحها في الملف وارفعه من جديد، أو نزّل القائمة لمراجعتها.</p>
   <div class="table-wrap"><table>

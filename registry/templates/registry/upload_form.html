@@ -16,7 +16,7 @@
     <div class="field"><label>{{ form.project.label }}</label>{{ form.project }}{{ form.project.errors }}</div>
     <div class="field"><label>{{ form.new_project.label }}</label>{{ form.new_project }}</div>
   </div>
-  <div class="field" style="margin-top:.8rem"><label>{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}</div>
+  <div class="field" style="margin-top:.85rem"><label>{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}</div>
 
   <div id="dist-box">
     <h2>٣. نوع المساعدة والتاريخ (لكشوف التوزيع)</h2>
@@ -27,7 +27,7 @@
       <div class="field"><label>{{ form.default_date.label }}</label>{{ form.default_date }}{{ form.default_date.errors }}</div>
     </div>
   </div>
-  <p style="margin-top:1rem"><button class="btn" type="submit">رفع ومعاينة</button></p>
+  <div class="form-actions"><button class="btn" type="submit"><svg class="ico sm"><use href="#i-upload"/></svg>رفع ومعاينة</button></div>
 </form>
 <script>
   (function () {

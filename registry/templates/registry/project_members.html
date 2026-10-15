@@ -4,8 +4,8 @@
 <h1>المستخدمون المسندون إلى «{{ p.name }}»</h1>
 <form method="post" class="card">
   {% csrf_token %}
-  <p class="help">يرى المستخدم المسند بيانات هذا المشروع فقط (مدير الدائرة: إدارة وتعديل، الموظف: بحث واستعلام). مدير النظام يرى كل المشاريع دائماً. استخدم Ctrl للتحديد المتعدد.</p>
+  <p class="help">يرى المستخدم المسند بيانات هذا المشروع فقط (مدير الدائرة: إدارة وتعديل، الموظف: بحث واستعلام). مدير النظام يرى كل المشاريع دائماً. للتحديد المتعدد: Ctrl مع النقر على الحاسوب، أو اختر عدة عناصر من القائمة المنبثقة على الجوال.</p>
   <div class="field"><label>{{ form.members.label }}</label>{{ form.members }}{{ form.members.errors }}</div>
-  <p style="margin-top:1rem"><button class="btn" type="submit">حفظ</button> <a class="btn secondary" href="{% url 'projects' %}">رجوع</a></p>
+  <div class="form-actions"><button class="btn" type="submit">حفظ</button> <a class="btn secondary" href="{% url 'projects' %}">رجوع</a></div>
 </form>
 {% endblock %}

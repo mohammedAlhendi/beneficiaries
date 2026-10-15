@@ -7,19 +7,28 @@
 <form method="post" enctype="multipart/form-data" class="card">
   {% csrf_token %}
   {{ form.non_field_errors }}
-  <div class="field"><label>{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}</div>
-  <div class="row" style="margin-top:.7rem">
-    <div class="field"><label>{{ form.aid_type.label }}</label>{{ form.aid_type }}</div>
-    <div class="field"><label>{{ form.project.label }}</label>{{ form.project }}</div>
-  </div>
-  <div class="row" style="margin-top:.7rem">
-    <div class="field"><label>{{ form.month_from.label }}</label>{{ form.month_from }}</div>
-    <div class="field"><label>{{ form.month_to.label }}</label>{{ form.month_to }}</div>
-    <div class="field"><label>{{ form.date_from.label }}</label>{{ form.date_from }}</div>
-    <div class="field"><label>{{ form.date_to.label }}</label>{{ form.date_to }}</div>
-  </div>
-  {% for f in form %}{% if f.name != 'file' and f.errors %}{{ f.errors }}{% endif %}{% endfor %}
+  <div class="field"><label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}</div>
+
+  <details class="more-filters">
+    <summary>
+      <svg class="ico sm"><use href="#i-filter"/></svg>
+      <span>نوع المساعدة والمشروع والفترة (اختياري)</span>
+      <span class="fcount" hidden></span>
+      <svg class="ico sm chev"><use href="#i-chevron"/></svg>
+    </summary>
+    <div class="row">
+      <div class="field"><label for="{{ form.aid_type.id_for_label }}">{{ form.aid_type.label }}</label>{{ form.aid_type }}</div>
+      <div class="field"><label for="{{ form.project.id_for_label }}">{{ form.project.label }}</label>{{ form.project }}</div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="{{ form.month_from.id_for_label }}">{{ form.month_from.label }}</label>{{ form.month_from }}</div>
+      <div class="field"><label for="{{ form.month_to.id_for_label }}">{{ form.month_to.label }}</label>{{ form.month_to }}</div>
+      <div class="field"><label for="{{ form.date_from.id_for_label }}">{{ form.date_from.label }}</label>{{ form.date_from }}</div>
+      <div class="field"><label for="{{ form.date_to.id_for_label }}">{{ form.date_to.label }}</label>{{ form.date_to }}</div>
+    </div>
+    {% for f in form %}{% if f.name != 'file' and f.errors %}{{ f.errors }}{% endif %}{% endfor %}
+  </details>
   <p class="help">اترك الفلاتر فارغة لمقارنة الملف بكل تاريخ الاستفادات. إذا حددت شهراً فهو يُقدَّم على التاريخ الدقيق. يتعرف النظام على أعمدة الاسم والهوية تلقائياً؛ يكفي عمود هوية، أو عمود أسماء فقط (مطابقة تامة للاسم).</p>
-  <button class="btn" type="submit">قارن الملف</button>
+  <div class="form-actions"><button class="btn" type="submit">قارن الملف</button></div>
 </form>
 {% endblock %}

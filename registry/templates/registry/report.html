@@ -11,9 +11,9 @@
   <div class="stat"><div class="v">{{ unique }}</div><div class="l">عدد المستفيدين الفريدين</div></div>
 </div>
 <div class="actions no-print">
-  <a class="btn" href="{% url 'report_export' %}?{{ request.GET.urlencode }}">تصدير إلى إكسل</a>
+  <a class="btn" href="{% url 'report_export' %}?{{ request.GET.urlencode }}"><svg class="ico sm"><use href="#i-download"/></svg>تصدير إلى إكسل</a>
   <a class="btn secondary" href="?{{ request.GET.urlencode }}&all=1" target="_blank">عرض الكل للطباعة</a>
-  <button class="btn secondary" type="button" onclick="window.print()">طباعة / حفظ PDF</button>
+  <button class="btn secondary" type="button" onclick="window.print()"><svg class="ico sm"><use href="#i-print"/></svg>طباعة / حفظ PDF</button>
 </div>
 <div class="card">
   <div class="table-wrap">

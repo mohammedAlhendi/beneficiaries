@@ -2,39 +2,116 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#114a39">
+  <meta name="color-scheme" content="light">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>{% block title %}نظام المستفيدين{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'registry/style.css' %}">
+  <link rel="stylesheet" href="{% static 'registry/style.css' %}?v=2">
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="{% url 'search' %}">نظام المستفيدين</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><circle cx="11.5" cy="14.5" r="2.5"/><path d="m13.3 16.3 1.7 1.7"/></symbol>
+    <symbol id="i-report" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M8 17v-6M13 17V7M18 17v-3"/></symbol>
+    <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  </defs>
+</svg>
+{% with n=request.resolver_match.url_name|default:"" %}
+<div class="app{% if not user.is_authenticated %} guest{% endif %}">
   {% if user.is_authenticated %}
-  <nav>
-    <a href="{% url 'search' %}" {% if request.resolver_match.url_name == 'search' %}class="active"{% endif %}>البحث</a>
-    {% if can_edit %}<a href="{% url 'distribution_list' %}" {% if 'distribution' in request.resolver_match.url_name %}class="active"{% endif %}>الكشوفات</a>{% endif %}
-    <a href="{% url 'compare_new' %}" {% if 'compare' in request.resolver_match.url_name %}class="active"{% endif %}>بحث بملف</a>
-    <a href="{% url 'report' %}" {% if 'report' in request.resolver_match.url_name %}class="active"{% endif %}>كشف مجمّع</a>
-    {% if can_edit %}
-    <a href="{% url 'upload_list' %}" {% if 'upload' in request.resolver_match.url_name %}class="active"{% endif %}>رفع الملفات</a>
-    <a href="{% url 'projects' %}" {% if 'project' in request.resolver_match.url_name %}class="active"{% endif %}>المشاريع</a>
-    <a href="{% url 'stats' %}" {% if request.resolver_match.url_name == 'stats' %}class="active"{% endif %}>إحصاءات</a>
+  <aside class="sidebar" id="sidebar" aria-label="القائمة الرئيسية">
+    <div class="sb-head">
+      <a class="brand" href="{% url 'search' %}">
+        <span class="logo"><svg class="ico"><use href="#i-heart"/></svg></span>
+        <span>نظام المستفيدين</span>
+      </a>
+      <button class="icon-btn close-btn" type="button" data-nav-close aria-label="إغلاق القائمة"><svg class="ico"><use href="#i-close"/></svg></button>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-group">الاستعلام</div>
+      <a href="{% url 'search' %}" {% if n == 'search' %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-search"/></svg><span>البحث</span></a>
+      <a href="{% url 'compare_new' %}" {% if 'compare' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-compare"/></svg><span>بحث بملف</span></a>
+      <a href="{% url 'report' %}" {% if 'report' in n and 'upload' not in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-report"/></svg><span>كشف مجمّع</span></a>
+      {% if can_edit %}<a href="{% url 'distribution_list' %}" {% if 'distribution' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-layers"/></svg><span>الكشوفات</span></a>{% endif %}
+
+      {% if can_edit %}
+      <div class="sb-group">إدارة البيانات</div>
+      <a href="{% url 'beneficiary_create' %}" {% if n == 'beneficiary_create' %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-userplus"/></svg><span>إدراج مستفيد</span></a>
+      <a href="{% url 'upload_list' %}" {% if 'upload' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-upload"/></svg><span>رفع الملفات</span></a>
+      <a href="{% url 'projects' %}" {% if 'project' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-folder"/></svg><span>المشاريع</span></a>
+      <a href="{% url 'stats' %}" {% if n == 'stats' %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-chart"/></svg><span>إحصاءات</span></a>
+      {% endif %}
+
+      {% if can_orphans %}
+      <div class="sb-group">الكفالة</div>
+      <a href="{% url 'orphan_list' %}" {% if 'orphan' in n or 'sponsor' in n or 'payment' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-heart"/></svg><span>الأيتام والكفلاء</span></a>
+      {% endif %}
+
+      {% if is_admin %}
+      <div class="sb-group">النظام</div>
+      <a href="{% url 'user_list' %}" {% if 'user' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-users"/></svg><span>المستخدمون</span></a>
+      <a href="{% url 'audit_list' %}" {% if 'audit' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-shield"/></svg><span>سجل التدقيق</span></a>
+      <a href="/admin/"><svg class="ico"><use href="#i-sliders"/></svg><span>الإدارة</span></a>
+      {% endif %}
+    </nav>
+    <div class="sb-foot">
+      <div class="avatar" aria-hidden="true">{{ user.get_full_name|default:user.username|slice:":1"|upper }}</div>
+      <div class="who"><b>{{ user.get_full_name|default:user.username }}</b><span>مسجّل الدخول</span></div>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" data-keep aria-label="تسجيل الخروج" title="خروج"><svg class="ico"><use href="#i-logout"/></svg></button></form>
+    </div>
+  </aside>
+  <div class="scrim" data-nav-close></div>
+  {% endif %}
+
+  <div class="main-col">
+    {% if user.is_authenticated %}
+    <header class="appbar">
+      <button class="icon-btn" type="button" data-nav-toggle aria-controls="sidebar" aria-expanded="false" aria-label="فتح القائمة"><svg class="ico"><use href="#i-menu"/></svg></button>
+      <a class="brand" href="{% url 'search' %}"><span class="logo"><svg class="ico"><use href="#i-heart"/></svg></span><span>نظام المستفيدين</span></a>
+    </header>
     {% endif %}
-    {% if can_edit %}<a href="{% url 'beneficiary_create' %}">إدراج مستفيد</a>{% endif %}
-    {% if can_orphans %}<a href="{% url 'orphan_list' %}" {% if 'orphan' in request.resolver_match.url_name or 'sponsor' in request.resolver_match.url_name or 'payment' in request.resolver_match.url_name %}class="active"{% endif %}>الأيتام والكفلاء</a>{% endif %}
-    {% if is_admin %}<a href="{% url 'user_list' %}" {% if 'user' in request.resolver_match.url_name %}class="active"{% endif %}>المستخدمون</a><a href="{% url 'audit_list' %}">سجل التدقيق</a><a href="/admin/">الإدارة</a>{% endif %}
-  </nav>
-  <div class="user">
-    <span>{{ user.get_full_name|default:user.username }}</span>
-    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">خروج</button></form>
+    <main>
+      {% if messages %}
+      <ul class="messages" role="status">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
   </div>
+
+  {% if user.is_authenticated %}
+  <nav class="tabbar no-print" aria-label="تنقل سريع">
+    <a href="{% url 'search' %}" {% if n == 'search' %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-search"/></svg><span>البحث</span></a>
+    <a href="{% url 'compare_new' %}" {% if 'compare' in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-compare"/></svg><span>بحث بملف</span></a>
+    {% if can_edit %}<a class="tab-add" href="{% url 'beneficiary_create' %}" aria-label="إدراج مستفيد"><span class="plus"><svg class="ico"><use href="#i-plus"/></svg></span></a>{% endif %}
+    <a href="{% url 'report' %}" {% if 'report' in n and 'upload' not in n %}class="active" aria-current="page"{% endif %}><svg class="ico"><use href="#i-report"/></svg><span>كشف مجمّع</span></a>
+    <button type="button" data-nav-toggle aria-controls="sidebar" aria-expanded="false"><svg class="ico"><use href="#i-menu"/></svg><span>المزيد</span></button>
+  </nav>
   {% endif %}
-</header>
-<main>
-  {% if messages %}
-  <ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>
-  {% endif %}
-  {% block content %}{% endblock %}
-</main>
+</div>
+{% endwith %}
+<script src="{% static 'registry/app.js' %}?v=2" defer></script>
 </body>
 </html>

@@ -22,7 +22,7 @@
   {{ form.non_field_errors }}
   <h2 style="margin-top:0">أي عمود يقابل أي حقل؟</h2>
   <p class="help">اقترح النظام المطابقة تلقائياً من أسماء الأعمدة؛ راجعها وصحّحها عند الحاجة. الاسم ورقم الهوية إلزاميان؛ وفي القائمة الأساسية تلزم أيضاً: اسم الزوجة رباعي، هوية الزوجة، وعدد أفراد الأسرة (تُرفض الصفوف الناقصة). كل أعمدة الملف تُحفظ كما رُفعت حتى لو لم تُطابَق.</p>
-  <div class="row">
+  <div class="row compact">
     {% for f in form %}
       {% if f.name != "default_aid_type" and f.name != "new_aid_type" and f.name != "default_date" %}
       <div class="field"><label>{{ f.label }}{% if f.field.required %} *{% endif %}</label>{{ f }}{{ f.errors }}</div>
@@ -39,7 +39,7 @@
     <div class="field"><label>{{ form.default_date.label }}</label>{{ form.default_date }}{{ form.default_date.errors }}</div>
   </div>
   {% endif %}
-  <p style="margin-top:1rem"><button class="btn" type="submit">تنقية البيانات ومراجعة الملخص</button></p>
+  <div class="form-actions"><button class="btn" type="submit">تنقية البيانات ومراجعة الملخص</button></div>
 </form>
 <form method="post" action="{% url 'upload_cancel' upload.pk %}">{% csrf_token %}
   <button class="btn secondary" type="submit">إلغاء الرفع</button>

@@ -5,8 +5,8 @@
 <p class="muted">المشروع: {{ d.project }} — عدد الأسماء: <strong>{{ d.names_count }}</strong>
   {% if d.upload %}— الملف الأصلي: <a href="{% url 'upload_file' d.upload.pk %}">{{ d.upload.file_name }}</a>{% endif %}</p>
 <div class="actions no-print">
-  <a class="btn" href="{% url 'distribution_export' d.pk %}">تصدير إلى إكسل</a>
-  <button class="btn secondary" type="button" onclick="window.print()">طباعة / حفظ PDF</button>
+  <a class="btn" href="{% url 'distribution_export' d.pk %}"><svg class="ico sm"><use href="#i-download"/></svg>تصدير إلى إكسل</a>
+  <button class="btn secondary" type="button" onclick="window.print()"><svg class="ico sm"><use href="#i-print"/></svg>طباعة / حفظ PDF</button>
   <a class="btn secondary" href="{% url 'distribution_list' %}">رجوع للكشوفات</a>
 </div>
 {% if can_edit %}

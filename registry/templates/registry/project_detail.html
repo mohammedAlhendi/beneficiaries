@@ -7,8 +7,8 @@
   <div class="stat"><div class="v">{{ o.people }}</div><div class="l">شخص استفاد</div></div>
   <div class="stat"><div class="v">{{ o.benefits }}</div><div class="l">استفادة مسجلة{% if o.manual %} (منها {{ o.manual }} يدوية){% endif %}</div></div>
 </div>
-<div class="actions no-print" style="margin:.8rem 0">
-  <a class="btn" href="{% url 'project_export' p.pk %}">تصدير كل أسماء المشروع (إكسل)</a>
+<div class="actions no-print">
+  <a class="btn" href="{% url 'project_export' p.pk %}"><svg class="ico sm"><use href="#i-download"/></svg>تصدير كل أسماء المشروع (إكسل)</a>
   <a class="btn secondary" href="{% url 'projects' %}">رجوع للمشاريع</a>
 </div>
 {% if o.by_type %}

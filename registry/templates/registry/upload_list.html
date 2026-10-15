@@ -2,7 +2,7 @@
 {% block title %}رفع الملفات{% endblock %}
 {% block content %}
 <h1>عمليات رفع الملفات</h1>
-{% if can_edit %}<p class="no-print"><a class="btn" href="{% url 'upload_new' %}">رفع ملف جديد</a></p>{% endif %}
+{% if can_edit %}<div class="actions no-print"><a class="btn" href="{% url 'upload_new' %}"><svg class="ico sm"><use href="#i-upload"/></svg>رفع ملف جديد</a></div>{% endif %}
 <div class="card">
   <div class="table-wrap">
   <table>

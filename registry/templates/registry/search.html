@@ -2,38 +2,29 @@
 {% block title %}البحث عن مستفيد{% endblock %}
 {% block content %}
 <h1>البحث عن مستفيد</h1>
-<div class="card no-print">
-  <h2 style="margin-top:0">البحث بملف كامل</h2>
-  <form method="post" action="{% url 'compare_new' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="row">
-      <div class="field" style="flex:2"><label>ارفع ملف إكسل بالأسماء/الهويات لمعرفة كم مرة استفاد كل واحد ومتى</label><input type="file" name="file" accept=".xlsx,.xlsm,.xls,.csv" required></div>
-      <button class="btn" type="submit">ابحث بالملف</button>
-      <a class="btn secondary" href="{% url 'compare_new' %}">خيارات متقدمة (فترة / نوع)</a>
-    </div>
-  </form>
-</div>
-<h2>البحث الفردي</h2>
 {% include "registry/_filters.html" with show_q=True show_status=True button_label="بحث" %}
-<div id="suggest-box" class="card no-print" style="display:none;margin-top:-.5rem"></div>
+<div id="suggest-box" class="card suggest no-print" hidden></div>
 <script>
 (function(){
   var q=document.querySelector('input[name="q"]'), box=document.getElementById('suggest-box'), t=null;
   if(!q||!box) return;
   q.setAttribute('autocomplete','off');
+  q.setAttribute('enterkeyhint','search');
   q.addEventListener('input',function(){
     clearTimeout(t); var v=q.value.trim();
-    if(v.length<2){box.style.display='none';return;}
+    if(v.length<2){box.hidden=true;return;}
     t=setTimeout(function(){
       fetch("{% url 'search_suggest' %}?q="+encodeURIComponent(v),{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
         box.innerHTML='';
-        if(!d.results.length){box.style.display='none';return;}
+        if(!d.results.length){box.hidden=true;return;}
         d.results.forEach(function(x){
-          var a=document.createElement('a'); a.href="/beneficiaries/"+x.id+"/"; a.style.display='block'; a.style.padding='.25rem 0';
-          a.textContent=x.name+' — '+x.national_id+(x.wife_name?' | الزوجة: '+x.wife_name:'')+(x.wife_national_id?' ('+x.wife_national_id+')':'')+(x.via?'  ⟵ '+x.via:'');
-          box.appendChild(a);
+          var a=document.createElement('a'); a.className='suggest-item'; a.href="/beneficiaries/"+x.id+"/";
+          var b=document.createElement('b'); b.textContent=x.name;
+          var s=document.createElement('small');
+          s.textContent=x.national_id+(x.wife_name?' | الزوجة: '+x.wife_name:'')+(x.wife_national_id?' ('+x.wife_national_id+')':'')+(x.via?'  ⟵ '+x.via:'');
+          a.appendChild(b); a.appendChild(s); box.appendChild(a);
         });
-        box.style.display='block';
+        box.hidden=false;
       }).catch(function(){});
     },250);
   });
@@ -42,8 +33,10 @@
 
 {% if page %}
   <div class="card">
-    <p><strong>{{ page.paginator.count }}</strong> نتيجة{% if filtered %} (ضمن الفلاتر المحددة){% endif %}
-      {% if page.paginator.count %}<a class="btn small secondary no-print" style="margin-inline-start:1rem" href="{% url 'search_export' %}?{{ qs }}">تصدير كل النتائج (إكسل)</a>{% endif %}</p>
+    <div class="card-title">
+      <p style="margin:0"><strong>{{ page.paginator.count }}</strong> نتيجة{% if filtered %} (ضمن الفلاتر المحددة){% endif %}</p>
+      {% if page.paginator.count %}<a class="btn small secondary no-print" href="{% url 'search_export' %}?{{ qs }}"><svg class="ico sm"><use href="#i-download"/></svg>تصدير كل النتائج (إكسل)</a>{% endif %}
+    </div>
     <div class="table-wrap">
       <table>
         <thead><tr>
@@ -84,4 +77,18 @@
   </div>
   <p class="muted">اكتب اسماً أو رقم هوية (أو جزءاً منهما) ثم اضغط «بحث». لمعرفة من لم يستفد، اختر الحالة «لم يستفد» مع نوع المساعدة والفترة (مثلاً: من لم يستلم النقدية هذا العام)، ثم صدّر القائمة.</p>
 {% endif %}
+
+<div class="card no-print">
+  <h2>البحث بملف كامل</h2>
+  <form method="post" action="{% url 'compare_new' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="field" style="flex:2"><label for="search-file">ارفع ملف إكسل بالأسماء/الهويات لمعرفة كم مرة استفاد كل واحد ومتى</label><input id="search-file" type="file" name="file" accept=".xlsx,.xlsm,.xls,.csv" required></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit">ابحث بالملف</button>
+      <a class="btn secondary" href="{% url 'compare_new' %}">خيارات متقدمة (فترة / نوع)</a>
+    </div>
+  </form>
+</div>
 {% endblock %}

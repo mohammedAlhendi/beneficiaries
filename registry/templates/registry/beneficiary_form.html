@@ -5,7 +5,7 @@
 <form method="post" class="card">
   {% csrf_token %}
   {{ form.non_field_errors }}
-  <p class="help">الحقول المعلَّمة بـ * إلزامية.</p>
+  <p class="help" style="margin-top:0">الحقول المعلَّمة بـ * إلزامية.</p>
   <div class="row">
     <div class="field">
       <label for="{{ form.national_id.id_for_label }}">{{ form.national_id.label }} *</label>{{ form.national_id }}{{ form.national_id.errors }}
@@ -17,8 +17,8 @@
       <label for="{{ form.project.id_for_label }}">{{ form.project.label }} *</label>{{ form.project }}{{ form.project.errors }}
     </div>{% endif %}
   </div>
-  <div class="row" style="margin-top:.8rem">
-    <div class="field" style="flex:2">
+  <div class="row compact">
+    <div class="field full" style="flex:2">
       <label for="{{ form.wife_name.id_for_label }}">{{ form.wife_name.label }} *</label>{{ form.wife_name }}{{ form.wife_name.errors }}
     </div>
     <div class="field">
@@ -28,26 +28,30 @@
       <label for="{{ form.family_size.id_for_label }}">{{ form.family_size.label }} *</label>{{ form.family_size }}{{ form.family_size.errors }}
     </div>
   </div>
-  <div class="field" style="margin-top:.8rem">
-    <label for="{{ form.manager_notes.id_for_label }}">{{ form.manager_notes.label }}</label>{{ form.manager_notes }}{{ form.manager_notes.errors }}
+  <div class="row">
+    <div class="field">
+      <label for="{{ form.manager_notes.id_for_label }}">{{ form.manager_notes.label }}</label>{{ form.manager_notes }}{{ form.manager_notes.errors }}
+    </div>
   </div>
-  <div class="field" style="margin-top:.8rem">
-    <label for="{{ form.social_status.id_for_label }}">{{ form.social_status.label }}</label>{{ form.social_status }}
+  <div class="row">
+    <div class="field">
+      <label for="{{ form.social_status.id_for_label }}">{{ form.social_status.label }}</label>{{ form.social_status }}
+    </div>
   </div>
 
   {% if bform %}
   <h2>الاستفادة الأولى (اختياري)</h2>
   {{ bform.non_field_errors }}
   <div class="row">
-    <div class="field"><label>{{ bform.project.label }}</label>{{ bform.project }}{{ bform.project.errors }}</div>
-    <div class="field"><label>{{ bform.aid_type.label }}</label>{{ bform.aid_type }}{{ bform.aid_type.errors }}</div>
-    <div class="field"><label>{{ bform.receipt_date.label }}</label>{{ bform.receipt_date }}{{ bform.receipt_date.errors }}</div>
+    <div class="field"><label for="{{ bform.project.id_for_label }}">{{ bform.project.label }}</label>{{ bform.project }}{{ bform.project.errors }}</div>
+    <div class="field"><label for="{{ bform.aid_type.id_for_label }}">{{ bform.aid_type.label }}</label>{{ bform.aid_type }}{{ bform.aid_type.errors }}</div>
+    <div class="field"><label for="{{ bform.receipt_date.id_for_label }}">{{ bform.receipt_date.label }}</label>{{ bform.receipt_date }}{{ bform.receipt_date.errors }}</div>
   </div>
   {% endif %}
 
-  <p style="margin-top:1rem">
+  <div class="form-actions">
     <button class="btn" type="submit">حفظ</button>
     <a class="btn secondary" href="{% if b %}{% url 'beneficiary_detail' b.pk %}{% else %}{% url 'search' %}{% endif %}">إلغاء</a>
-  </p>
+  </div>
 </form>
 {% endblock %}
