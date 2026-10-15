@@ -226,7 +226,8 @@ class FlowTests(UploadHelpers, TestCase):
             "full_name": "سامي النجار", "national_id": "401234567", "social_status": "معيل",
             "wife_name": "هدى أحمد محمد النجار", "wife_national_id": "801234567", "family_size": "5",
             "manager_notes": "حالة عاجلة",
-            "project": project.pk, "aid_type": aid.pk, "receipt_date": (TODAY - dt.timedelta(days=1)).isoformat(),
+            "project": project.pk, "benefit-aid_type": aid.pk,
+            "benefit-receipt_date": (TODAY - dt.timedelta(days=1)).isoformat(),
         })
         self.assertEqual(resp.status_code, 302)
         b = Beneficiary.objects.get()

@@ -237,13 +237,13 @@ class OptionalBenefitForm(BenefitForm):
 
     def clean(self):
         cd = super().clean()
-        filled = [bool(cd.get(k)) for k in ("project", "aid_type", "receipt_date")]
+        filled = [bool(cd.get(k)) for k in ("aid_type", "receipt_date")]
         if any(filled) and not all(filled):
-            raise forms.ValidationError("لإضافة استفادة املأ المشروع والنوع والتاريخ جميعاً، أو اتركها فارغة.")
+            raise forms.ValidationError("لإضافة استفادة املأ النوع والتاريخ معاً (المشروع اختياري)، أو اتركها فارغة.")
         return cd
 
     def has_benefit(self):
-        return bool(self.cleaned_data.get("project"))
+        return bool(self.cleaned_data.get("aid_type"))
 
 
 class CompareForm(FilterForm):

@@ -1,5 +1,6 @@
 """إعدادات نظام قاعدة بيانات المستفيدين."""
 import os
+import tempfile
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "registry.context.roles",
+                "registry.context.upload_limit",
             ],
         },
     },
@@ -99,7 +101,14 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(tempfile.gettempdir()) / "media" if os.environ.get("VERCEL") else BASE_DIR / "media"
+
+# على Vercel تُحفظ الملفات المرفوعة في Supabase Storage (القرص للقراءة فقط هناك)
+if os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_SERVICE_ROLE_KEY"):
+    STORAGES = {
+        "default": {"BACKEND": "config.storage.SupabaseStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "login"
@@ -122,7 +131,8 @@ NATIONAL_ID_LENGTHS = tuple(
 )
 # يلزم أن يكون اسم الزوجة رباعياً (4 كلمات فأكثر) في الإدخال والاستيراد؛ اجعله False لتخفيف الشرط
 STRICT_WIFE_QUAD_NAME = os.environ.get("STRICT_WIFE_QUAD_NAME", "1") == "1"
-MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "25"))
+# Vercel يرفض أي طلب أكبر من 4.5 ميغابايت قبل وصوله إلى Django
+MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "4" if os.environ.get("VERCEL") else "25"))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_MB * 1024 * 1024
 
 # تفعيل قراءة النطاقات القادمة عبر بروكسي Vercel بشكل صحيح

@@ -2,17 +2,21 @@ import os
 import re
 import time
 import uuid
+from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from . import services
@@ -137,7 +141,7 @@ def beneficiary_detail(request, pk):
 @role_required(*EDIT)
 def beneficiary_create(request):
     form = BeneficiaryForm(request.POST or None, user=request.user)
-    bform = OptionalBenefitForm(request.POST or None, user=request.user)
+    bform = OptionalBenefitForm(request.POST or None, user=request.user, prefix="benefit")
     if request.method == "POST" and form.is_valid() and bform.is_valid():
         b = form.save(commit=False)
         b.home_project = form.cleaned_data["project"]
@@ -145,7 +149,8 @@ def beneficiary_create(request):
         services.log(request.user, "create_beneficiary", b)
         if bform.has_benefit():
             cd = bform.cleaned_data
-            services.add_manual_benefit(b, cd["project"], cd["aid_type"], cd["receipt_date"], request.user)
+            services.add_manual_benefit(b, cd["project"] or b.home_project, cd["aid_type"], cd["receipt_date"],
+                                        request.user)
         messages.success(request, "تم حفظ المستفيد.")
         return redirect("beneficiary_detail", pk=b.pk)
     return render(request, "registry/beneficiary_form.html", {"form": form, "bform": bform, "title": "إدراج مستفيد"})
@@ -664,29 +669,41 @@ def audit_list(request):
 
 
 # ================================================================ مقارنة ملف مع القاعدة
-def _compare_dir():
-    d = Path(settings.MEDIA_ROOT) / "compare"
-    d.mkdir(parents=True, exist_ok=True)
-    return d
+COMPARE_DIR = "compare"
+
+
+def _compare_key(token, suffix):
+    return f"{COMPARE_DIR}/{token}{suffix}"
 
 
 def _purge_compare_files(max_age=24 * 3600):
-    now = time.time()
-    for p in _compare_dir().iterdir():
-        try:
-            if now - p.stat().st_mtime > max_age:
-                p.unlink()
-        except OSError:
-            pass
+    cutoff = timezone.now() - timedelta(seconds=max_age)
+    try:
+        _, files = default_storage.listdir(COMPARE_DIR)
+        for f in files:
+            key = f"{COMPARE_DIR}/{f}"
+            if default_storage.get_modified_time(key) < cutoff:
+                default_storage.delete(key)
+    except Exception:  # التنظيف اختياري ولا يجب أن يوقف المقارنة
+        pass
+
+
+def _compare_file_name(token):
+    if not re.fullmatch(r"[0-9a-f]{32}", token or ""):
+        raise Http404
+    try:
+        with default_storage.open(_compare_key(token, "-name.txt"), "rb") as fh:
+            return fh.read().decode("utf-8")
+    except FileNotFoundError:
+        raise Http404
 
 
 def _compare_path(token):
-    if not re.fullmatch(r"[0-9a-f]{32}", token or ""):
+    ext = os.path.splitext(_compare_file_name(token))[1].lower()
+    try:
+        return Path(default_storage.path(_compare_key(token, ext)))
+    except FileNotFoundError:
         raise Http404
-    found = list(_compare_dir().glob(f"{token}.*"))
-    if not found:
-        raise Http404
-    return found[0]
 
 
 @role_required(*ANY)
@@ -699,11 +716,8 @@ def compare_new(request):
             _purge_compare_files()
             token = uuid.uuid4().hex
             ext = os.path.splitext(f.name)[1].lower()
-            path = _compare_dir() / f"{token}{ext}"
-            with path.open("wb") as fh:
-                for chunk in f.chunks():
-                    fh.write(chunk)
-            (_compare_dir() / f"{token}-name.txt").write_text(f.name, encoding="utf-8")
+            default_storage.save(_compare_key(token, ext), f)
+            default_storage.save(_compare_key(token, "-name.txt"), ContentFile(f.name.encode("utf-8")))
             params = {k: v for k, v in request.POST.items()
                       if k in ("month_from", "month_to", "date_from", "date_to", "aid_type", "project") and v}
             return redirect(reverse("compare_result", args=[token]) + ("?" + urlencode(params) if params else ""))
@@ -745,9 +759,7 @@ def _compare_run(request, token):
 @role_required(*ANY)
 def compare_result(request, token):
     form, cd, rows, counts = _compare_run(request, token)
-    _compare_path(token)
-    name_file = _compare_dir() / f"{token}-name.txt"
-    file_name = name_file.read_text(encoding="utf-8") if name_file.exists() else ""
+    file_name = _compare_file_name(token)
     if rows is None:
         return render(request, "registry/compare_result.html",
                       {"form": form, "error": counts["error"], "token": token, "file_name": file_name})

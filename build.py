@@ -78,11 +78,20 @@ def ensure_admin():
     print(f"Admin user '{username}' {'created' if created else 'updated'}.")
 
 
+def ensure_storage():
+    from django.core.files.storage import default_storage
+
+    if hasattr(default_storage, "ensure_bucket"):
+        default_storage.ensure_bucket()
+        print(f"Storage bucket '{default_storage.bucket}' ready.")
+
+
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     django.setup()
     migrate()
     ensure_admin()
+    ensure_storage()
 
 
 if __name__ == "__main__":

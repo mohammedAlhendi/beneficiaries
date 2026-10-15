@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from .roles import ADMIN, MANAGER, ORPHAN_ROLES, has_role
 
 
@@ -10,3 +12,7 @@ def roles(request):
         "is_admin": has_role(user, ADMIN),
         "can_orphans": has_role(user, *ORPHAN_ROLES),
     }
+
+
+def upload_limit(request):
+    return {"max_upload_mb": settings.MAX_UPLOAD_MB}

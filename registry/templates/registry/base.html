@@ -11,7 +11,7 @@
   <title>{% block title %}نظام المستفيدين{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'registry/style.css' %}?v=2">
 </head>
-<body>
+<body data-max-upload-mb="{{ max_upload_mb }}">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
@@ -112,6 +112,6 @@
   {% endif %}
 </div>
 {% endwith %}
-<script src="{% static 'registry/app.js' %}?v=2" defer></script>
+<script src="{% static 'registry/app.js' %}?v=3" defer></script>
 </body>
 </html>
